@@ -11,6 +11,8 @@
         <p>{{ $product->description }}</p>
         <p>{{ $product->price }}</p>
     @endforeach
+
+    {{ $products->links('vendor.pagination.simple-default') }}
 </x-layout>
 
 

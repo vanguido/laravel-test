@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Requests\SaveProductRequest;
 use App\Models\Product;
 
 use Illuminate\Http\Request;
@@ -10,7 +12,7 @@ class ProductController extends Controller
     public function index()
     {
         return view('products.index', [
-            'products' => Product::all()
+            'products' => Product::orderBy('created_at')->paginate(3)
         ]);
     }
 
@@ -18,16 +20,10 @@ class ProductController extends Controller
         return view('products.create');
     }
 
-    public function store(Request $request) {
-        $request->validate([
-            'name' => 'required|max:100',
-            'description' => 'nullable|min:3',
-            'price' => 'required|decimal:0,2|max:100', 
-        ]);
+    public function store(SaveProductRequest $request) {
+        $product = Product::create($request->validated());
 
-        Product::create($request->input());
-
-        return redirect()->route('products.index');
+        return redirect()->route('products.show', $product)->with('status', 'Product created');
     }
 
     public function show(Product $product) { 
@@ -35,4 +31,20 @@ class ProductController extends Controller
         return view('products.show', compact('product'));
     }
 
+    public function edit(Product $product) {
+        return view('products.edit', compact('product'));
+    }
+
+    public function update(SaveProductRequest $request, Product $product) {
+        $product->update($request->validated());
+
+        return redirect()->route('products.show', $product)->with('status', 'Product updated');
+    }
+
+    public function destroy(Product $product) { 
+
+        $product->delete();
+
+        return redirect()->route('products.index')->with('status', 'Product deleted');
+    }
 }

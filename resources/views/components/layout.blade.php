@@ -5,6 +5,9 @@
     <title>Laravel App</title>
 </head>
 <body>
+    @if (session('status'))
+        <div>{{ session('status') }}</div>
+    @endif
     {{ $slot }}
 </body>
 </html>
